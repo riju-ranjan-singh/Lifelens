@@ -16,9 +16,8 @@ services:
       - key: OPENROUTER_API_KEY
         sync: false # You will need to paste your OpenRouter key manually in the Render dashboard
 
-  # The Free PostgreSQL Database
-  - type: psql
-    name: lifelens-db
+databases:
+  - name: lifelens-db
     plan: free
     databaseName: lifelens
     user: lifelens_user
