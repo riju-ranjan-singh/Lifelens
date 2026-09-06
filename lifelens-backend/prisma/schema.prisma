@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  email                 String   @unique
+  passwordHash          String
+  name                  String
+  personalityPreference String   @default("Balanced")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  tasks                 Task[]
+  schedules             Schedule[]
+  memories              Memory[]
+  notifications         Notification[]
+  reflections           Reflection[]
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   @default("Other")
+  priority    String   @default("Medium") // Low, Medium, High
+  duration    Int?     // estimated duration in minutes
+  deadline    DateTime?
+  status      String   @default("Pending") // Pending, Completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  date        DateTime
+  taskIds     String[] // order of tasks to complete
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Memory {
+  id          String   @id @default(uuid())
+  category    String   // 'preference', 'goal', 'routine', 'fact'
+  content     String
+  importance  Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  body        String
+  scheduledFor DateTime
+  isSent      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Reflection {
+  id          String   @id @default(uuid())
+  date        DateTime
+  content     String
+  insights    String?
+  createdAt   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}

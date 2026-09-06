@@ -1,0 +1,24 @@
+services:
+  # The NestJS Backend Service
+  - type: web
+    name: lifelens-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npx prisma db push && npm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lifelens-db
+          property: connectionString
+      - key: LIFELENS_SECRET_KEY
+        generateValue: true
+      - key: OPENROUTER_API_KEY
+        sync: false # You will need to paste your OpenRouter key manually in the Render dashboard
+
+  # The Free PostgreSQL Database
+  - type: psql
+    name: lifelens-db
+    plan: free
+    databaseName: lifelens
+    user: lifelens_user
